@@ -5,14 +5,14 @@
 
 (function($) {
 
-  Drupal.behaviors.livefyreAuthentication = {
+  Drupal.behaviors.livefyreEnterpriseAuthentication = {
     attach: function (context, settings) {
       // After the fyre.conv has created.
       fyre.conv.ready(function() {
-        // Check that the livefyre.Usertoken is not null.
-        if (typeof settings.livefyre != 'undefined' && typeof settings.livefyre.userToken != 'undefined') {
+        // Check that the livefyreEnterprise.Usertoken is not null.
+        if (typeof settings.livefyreEnterprise != 'undefined' && typeof settings.livefyreEnterprise.userToken != 'undefined') {
           // Authenticate the user with the given token.
-          fyre.conv.login(settings.livefyre.userToken);
+          fyre.conv.login(settings.livefyreEnterprise.userToken);
         }
 
         /**
@@ -24,7 +24,7 @@
         authDelegate.login = function (handlers){
           var param = {
             q: 'user/login',
-            destination: settings.livefyre.destination
+            destination: settings.livefyreEnterprise.destination
           };
           window.location = settings.basePath + '?' + $.param(param);
         };
@@ -39,7 +39,7 @@
           handlers.success();
           var param = {
             q: 'user/logout',
-            destination: settings.livefyre.destination
+            destination: settings.livefyreEnterprise.destination
           };
           window.location = settings.basePath + '?' + $.param(param);
         };
@@ -52,8 +52,8 @@
          */
         authDelegate.editProfile = function(handlers, author) {
           var param = {
-            q: 'user/' + settings.livefyre.uid + '/edit',
-            destination: settings.livefyre.destination
+            q: 'user/' + settings.livefyreEnterprise.uid + '/edit',
+            destination: settings.livefyreEnterprise.destination
           };
           window.location = settings.basePath + '?' + $.param(param);
         };
