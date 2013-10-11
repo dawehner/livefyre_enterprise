@@ -1,7 +1,7 @@
-name = Livefyre comments 3
-description = Implement Livefyre Comments 3 on your Drupal Site.
+name = Livefyre enterprise
+description = Implement Livefyre for enterprise users on your Drupal Site.
 core = 7.x
 
-configure = admin/config/content/livefyre
+configure = admin/config/content/livefyre-enterprise
 
 dependencies[] = entity
