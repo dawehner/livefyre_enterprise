@@ -7,7 +7,7 @@
 /**
  * Implements hook_field_schema().
  */
-function livefyre_field_schema($field) {
+function livefyre_enterprise_field_schema($field) {
   $columns = array(
     'value' => array(
       'type' => 'int',
@@ -23,8 +23,8 @@ function livefyre_field_schema($field) {
 /**
  * Implements hook_schema().
  */
-function livefyre_schema() {
-  $schema['livefyre_comments'] = array(
+function livefyre_enterprise_schema() {
+  $schema['livefyre_enterprise_comments'] = array(
     'description' => 'Connection table between drupal comments and livefyre comments.',
     'fields' => array(
       'lfcid' => array(
@@ -43,7 +43,7 @@ function livefyre_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => 'The {livefyre_comments}.lfcid to which this comment is a reply. If set to 0, this comment is not a reply to an existing comment.',
+        'description' => 'The {livefyre_enterprise_comments}.lfcid to which this comment is a reply. If set to 0, this comment is not a reply to an existing comment.',
       ),
       'uid' => array(
         'description' => "The comment creator's id. Primary key of {users} table.",
@@ -139,16 +139,16 @@ function livefyre_schema() {
  *
  * Delete created variables.
  */
-function livefyre_uninstall() {
-  variable_del('livefyre_site_id');
-  variable_del('livefyre_site_key');
-  variable_del('livefyre_since_id');
-  variable_del('livefyre_network');
-  variable_del('livefyre_network_key');
-  variable_del('livefyre_auth_delegate');
-  variable_del('livefyre_conv_load_callback');
-  variable_del('livefyre_custom_css');
-  variable_del('livefyre_environment');
-  variable_del('livefyre_jr_capture');
-  variable_del('livefyre_sync_activity_number');
+function livefyre_enterprise_uninstall() {
+  variable_del('livefyre_enterprise_site_id');
+  variable_del('livefyre_enterprise_site_key');
+  variable_del('livefyre_enterprise_since_id');
+  variable_del('livefyre_enterprise_network');
+  variable_del('livefyre_enterprise_network_key');
+  variable_del('livefyre_enterprise_auth_delegate');
+  variable_del('livefyre_enterprise_conv_load_callback');
+  variable_del('livefyre_enterprise_custom_css');
+  variable_del('livefyre_enterprise_environment');
+  variable_del('livefyre_enterprise_jr_capture');
+  variable_del('livefyre_enterprise_sync_activity_number');
 }
