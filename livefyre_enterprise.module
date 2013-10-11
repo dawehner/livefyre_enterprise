@@ -239,7 +239,7 @@ function livefyre_enterprise_field_widget_form(&$form, &$form_state, $field, $in
 /**
  * Implements hook_theme().
  */
-function livefyre_theme($existing, $type, $theme, $path) {
+function livefyre_enterprise_theme($existing, $type, $theme, $path) {
   return array(
     'livefyre_enterprise_formatter_full' => array(
       'variables' => array(
