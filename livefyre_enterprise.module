@@ -294,7 +294,7 @@ function livefyre_enterprise_entity_info() {
  */
 function theme_livefyre_enterprise_formatter_full(&$variables) {
   // Custom delegate object if this is and enterprise customer.
-  $delegate = livefyre_enterprise_is_enterprise() ? 'authDelegate' : '';
+  $delegate = 'authDelegate';
 
   livefyre_enterprise_page_setup();
 
@@ -385,7 +385,7 @@ function livefyre_enterprise_build_conv($article_id, $title) {
   $article = $site->article($article_id, $source_url, $title);
   $conv = $article->conversation();
 
-  if (livefyre_enterprise_is_enterprise() && !$delegate) {
+  if (!$delegate) {
     // Authenticate the user.
     livefyre_enterprise_user_authentication();
   }
@@ -402,7 +402,7 @@ function livefyre_enterprise_build_conv($article_id, $title) {
 function livefyre_enterprise_add_footer($src) {
   // Add a default delegate if we hasn't set it yet.
   $delegates = livefyre_enterprise_get_delegates();
-  if (livefyre_enterprise_is_enterprise() && !$delegates) {
+  if (!$delegates) {
     $authDelegate = "window.authDelegate = new fyre.conv.RemoteAuthDelegate();";
     $src = "{$authDelegate}\n{$src}";
   }
@@ -602,14 +602,6 @@ function livefyre_enterprise_user_authentication() {
 
   // Add necessary javascript files and pass the token variable.
   drupal_add_js($js_settings, 'setting');
-}
-
-/**
- * Checks that the current environment is enterprise.
- * @return bool
- */
-function livefyre_enterprise_is_enterprise() {
-  return (variable_get('livefyre_enterprise_network', 'livefyre.com') != 'livefyre.com');
 }
 
 /**
