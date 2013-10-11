@@ -7,21 +7,21 @@
 /**
  * Admin settings form.
  */
-function livefyre_admin($form, &$form_state) {
+function livefyre_enterprise_admin($form, &$form_state) {
   $form = array();
 
-  $form['livefyre_site_id'] = array(
+  $form['livefyre_enterprise_site_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Livefyre Site ID'),
-    '#default_value' => variable_get('livefyre_site_id'),
+    '#default_value' => variable_get('livefyre_enterprise_site_id'),
     '#description' => t("The site ID supplied by Livefyre."),
     '#required' => TRUE,
   );
 
-  $form['livefyre_site_key'] = array(
+  $form['livefyre_enterprise_site_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Livefyre Site Key'),
-    '#default_value' => variable_get('livefyre_site_key'),
+    '#default_value' => variable_get('livefyre_enterprise_site_key'),
     '#description' => t("The Site Key supplied by Livefyre."),
     '#required' => TRUE,
   );
@@ -32,10 +32,10 @@ function livefyre_admin($form, &$form_state) {
   // Enterprise Hook
   include "livefyre-enterprise-settings.inc";
 
-  $form['livefyre_sync_activity_number'] = array(
+  $form['livefyre_enterprise_sync_activity_number'] = array(
     '#type' => 'textfield',
     '#title' => t('Number of synchronized activity messages'),
-    '#default_value' => variable_get('livefyre_sync_activity_number', 25),
+    '#default_value' => variable_get('livefyre_enterprise_sync_activity_number', 25),
     '#description' => t("Activity messages are synchronized at every cron run. Please define how many activity messages should be processed at a cron run."),
     '#required' => TRUE,
     '#element_validate' => array('element_validate_integer_positive'),
