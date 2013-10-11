@@ -389,6 +389,16 @@ function livefyre_enterprise_build_conv($article_id, $title) {
     // Authenticate the user.
     livefyre_enterprise_user_authentication();
   }
+  else {
+    // Use custom delegate functions if the user added custom ones in the admin interface.
+    drupal_add_js($delegate,
+      array(
+        'type' => 'inline',
+        'scope' => 'footer',
+        'weight' => -91,
+      )
+    );
+  }
 
   return $conv;
 }
