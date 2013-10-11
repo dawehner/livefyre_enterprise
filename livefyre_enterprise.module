@@ -446,7 +446,7 @@ function livefyre_enterprise_page_setup() {
 
   // Add destination variable to js settings.
   $js_settings = array(
-    'livefyre' => drupal_get_destination(),
+    'livefyreEnterprise' => drupal_get_destination(),
   );
   $js_settings['livefyreEnterprise']['uid'] = $user->uid;
   drupal_add_js($js_settings, 'setting');
