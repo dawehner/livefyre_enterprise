@@ -302,7 +302,7 @@ function theme_livefyre_enterprise_formatter_full(&$variables) {
 
   // Add JS libs.
   module_load_include('inc', 'livefyre_enterprise', 'livefyre-enterprise-code');
-  $conv = livefyre_build_conv($variables['article_id'], $variables['title']);
+  $conv = livefyre_enterprise_build_conv($variables['article_id'], $variables['title']);
   $output = $conv->to_initjs_v3($variables['widget_id'], $delegate);
   $cleansed_tags = str_replace('<script type="text/javascript">', "", $output);
   $cleansed_tags = str_replace('</script>', "", $cleansed_tags);
