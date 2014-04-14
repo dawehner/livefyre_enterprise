@@ -318,8 +318,17 @@ function theme_livefyre_enterprise_formatter_full(&$variables) {
  */
 function theme_livefyre_enterprise_formatter_comments_number(&$variables) {
   $network = variable_get('livefyre_enterprise_network', 'livefyre.com');
-  drupal_add_js("http://zor.{$network}/wjs/v1.0/javascripts/CommentCount.js", 'external');
-  $out = '<span class="livefyre-enterprise-commentcount" data-lf-site-id="' . $variables['site_id'] . '" data-lf-article-id="' . $variables['article_id'] . '">' .
+  $element = array(
+    '#tag' => 'script',
+    '#type' => 'html_tag',
+    '#attributes' => array(
+      'src' => "http://zor.{$network}/wjs/v1.0/javascripts/CommentCount.js",
+      'type' => 'text/javascript',
+      'data-lf-domain' => $network,
+    ),
+  );
+  drupal_add_html_head($element, 'livefyre_enterprise_commentcountjs');
+  $out = '<span class="livefyre-enterprise-commentcount livefyre-commentcount" data-lf-site-id="' . $variables['site_id'] . '" data-lf-article-id="' . $variables['article_id'] . '">' .
     t('0 Comments')
     . '</span>';
 
