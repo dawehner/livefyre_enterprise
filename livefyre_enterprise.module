@@ -26,44 +26,6 @@ function livefyre_enterprise_help($path, $arg) {
 }
 
 /**
- * Implements hook_menu().
- */
-function livefyre_enterprise_menu() {
-  $items = array();
-
-  $items['admin/config/content/livefyre-enterprise'] = array(
-    'title' => 'Livefyre enterprise',
-    'description' => 'Livefyre enterprise Plugin for Drupal',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('livefyre_enterprise_admin'),
-    'access arguments' => array('administer livefyre enterprise settings'),
-    'file' => 'livefyre_enterprise.admin.inc',
-  );
-
-  return $items;
-}
-
-/**
- * Implements hook_permission().
- */
-function livefyre_enterprise_permission() {
-  return array(
-    'administer livefyre enterprise settings' => array(
-      'title' => t('Administer Livefyre enterprise module'),
-      'description' => t('Perform administration tasks for the Livefyre enterprise module.'),
-    ),
-    'access livefyre enterprise comments' => array(
-      'title' => t('Access Livefyre enterprise comments'),
-      'description' => t('Use Livefyre entperise comments on the site.'),
-    ),
-    'bypass livefyre enterprise comments visibility settings' => array(
-      'title' => t('Bypass Livefyre enterprise comments visibility settings'),
-      'description' => t('Show Livefyre enterprise comment fields, regardless of the field settings.'),
-    ),
-  );
-}
-
-/**
  * Implements hook_cron().
  *
  * Sync livefyre comment with the created entities.
@@ -259,37 +221,6 @@ function livefyre_enterprise_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implements hook_entity_info().
- */
-function livefyre_enterprise_entity_info() {
-  $return = array(
-    'livefyre_enterprise_comment' => array(
-      'label' => t('Livefyre enterprise Comment'),
-      'controller class' => 'EntityAPIController',
-      'module' => 'livefyre_enterprise',
-      'views controller class' => 'LivefyreEnterpriseEntityDefaultViewsController',
-      'base table' => 'livefyre_enterprise_comments',
-      'fieldable' => FALSE,
-      'entity keys' => array(
-        'id' => 'lfcid',
-      ),
-      'bundles' => array(
-        'livefyre_enterprise_comment' => array(
-          'label' => t('Livefyre enterprise Comment'),
-        ),
-      ),
-      'view modes' => array(
-        'full' => array(
-          'label' => t('Livefyre enterprise Comment'),
-          'custom settings' => FALSE,
-        ),
-      ),
-    ),
-  );
-  return $return;
-}
-
-/**
  * Renders livefyre field's full formatter.
  */
 function theme_livefyre_enterprise_formatter_full(&$variables) {
@@ -472,105 +403,6 @@ function livefyre_enterprise_page_setup() {
 }
 
 /**
- * Gets the comments form livefyre server and stores them as Drupal comments.
- */
-function livefyre_enterprise_comment_sync() {
-  $lf_network = variable_get('livefyre_enterprise_network', 'livefyre.com');
-  $lf_site_id = variable_get('livefyre_enterprise_site_id');
-  $lf_site_key = variable_get('livefyre_enterprise_site_key');
-  $since_id = variable_get('livefyre_enterprise_since_id', '');
-  $query = array(
-    'page_size' => variable_get('livefyre_enterprise_sync_activity_number', 25),
-    'sig_created' => REQUEST_TIME,
-  );
-  $sig = getHmacsha1Signature(base64_decode($lf_site_key), drupal_http_build_query($query));
-  $query['sig'] = $sig;
-
-  $res = drupal_http_request("http://bootstrap.{$lf_network}/api/v1.1/private/feed/site/{$lf_site_id}/sync/{$since_id}?" . drupal_http_build_query($query));
-  if ($res->code == 200) {
-    $data = json_decode($res->data);
-
-    // Store the message last status (state) and the latest body text to store.
-    $messages = array();
-    foreach ($data as $message) {
-      // If we limit the number of the results the last object will not have id.
-      if (!isset($message->lf_comment_id)) {
-        continue;
-      }
-
-      if (!isset($messages[$message->lf_comment_id])) {
-        $messages[$message->lf_comment_id] = array(
-          'original' => $message,
-          'status' => $message->state,
-          'body' => $message->body_text,
-        );
-      }
-      else {
-        $messages[$message->lf_comment_id]['status'] = $message->state;
-        $messages[$message->lf_comment_id]['body'] = $message->body_text;
-      }
-      // Store since ID for the next sync event.
-      variable_set('livefyre_enterprise_since_id', $message->activity_id);
-    }
-
-    foreach ($messages as $lf_comment_id => $message) {
-      $original_message = $message['original'];
-      $comment = new stdClass();
-      $comment->lf_comment_id = $lf_comment_id;
-      // Update the existing entity.
-      if ($lfcid = livefyre_enterprise_get_lfcid_from_lf_comment_id($lf_comment_id)) {
-        $comment->lfcid = $lfcid;
-      }
-      // Delete the entity if it removed from livefyre system.
-      if ($message['status'] == 'deleted' && isset($comment->lfcid)) {
-        entity_delete('livefyre_enterprise_comment', $comment->lfcid);
-        continue;
-      }
-      // Do not do anything if the comment doesn't exist in Drupal and
-      // marked as deleted in livefyre system.
-      if ($message['status'] == 'deleted' && !isset($comment->lfcid)) {
-        continue;
-      }
-
-      // Store parent entity ID.
-      if (isset($original_message->lf_parent_comment_id) && $pid = livefyre_enterprise_get_lfcid_from_lf_comment_id($original_message->lf_parent_comment_id)) {
-        $comment->pid = $pid;
-      }
-
-      // These properties are not allowed to update so store only if this is a
-      // new comment.
-      if (!isset($comment->lfcid)) {
-        // Check if the user is an existing Drupal user.
-        $users = user_load_multiple(array(), array('mail' => $original_message->author_email));
-        if ($users) {
-          $account = reset($users);
-          $comment->uid = $account->uid;
-        }
-        else {
-          $comment->uid = 0;
-        }
-        $comment->name = $original_message->display_name;
-        $comment->mail = $original_message->author_email;
-
-        // Other property informations.
-        $comment->created = $original_message->created;
-        $comment->hostname = $original_message->ip_address;
-        if (isset($original_message->author_url)) {
-          $comment->homepage = $original_message->author_url;
-        }
-        $comment->path = $original_message->article_identifier;
-      }
-
-      $comment->published = $message['status'] == 'active' ? 1 : 0;
-      $comment->status = $message['status'];
-      $comment->body = $message['body'];
-      // Store the entity.
-      entity_save('livefyre_enterprise_comment', $comment);
-    }
-  }
-}
-
-/**
  * Returns with the Drupal entity ID from the livefyre comment ID.
  *
  * @param $lf_comment_id
@@ -636,30 +468,4 @@ function livefyre_enterprise_get_delegates() {
   }
 
   return FALSE;
-}
-
-/**
- * Livefyre Views Controller class.
- */
-class LivefyreEnterpriseEntityDefaultViewsController extends EntityDefaultViewsController {
-
-  /**
-   * Edit special fields to views_data().
-   */
-  public function views_data() {
-    $data = parent::views_data();
-
-    // Created field.
-    $data['livefyre_enterprise_comments']['created']['field']['handler'] = 'views_handler_field_date';
-    $data['livefyre_enterprise_comments']['created']['filter']['handler'] = 'views_handler_filter_date';
-    $data['livefyre_enterprise_comments']['created']['argument']['handler'] = 'views_handler_argument_date';
-    $data['livefyre_enterprise_comments']['created']['sort']['handler'] = 'views_handler_sort_date';
-    // Homepage field.
-    $data['livefyre_enterprise_comments']['homepage']['field']['handler'] = 'views_handler_field_url';
-    // Published field.
-    $data['livefyre_enterprise_comments']['published']['field']['handler'] = 'views_handler_field_boolean';
-    $data['livefyre_enterprise_comments']['published']['filter']['handler'] = 'views_handler_filter_boolean_operator';
-
-    return $data;
-  }
 }

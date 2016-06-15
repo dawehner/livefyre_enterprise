@@ -1,0 +1,11 @@
+administer livefyre enterprise settings:
+  title: Administer Livefyre enterprise module
+  description: Perform administration tasks for the Livefyre enterprise module.
+
+access livefyre enterprise comments:
+  title: Access Livefyre enterprise comments
+  description: Use Livefyre entperise comments on the site.
+
+bypass livefyre enterprise comments visibility settings:
+  title: Bypass Livefyre enterprise comments visibility settings
+  description: Show Livefyre enterprise comment fields, regardless of the field settings.
