@@ -1,0 +1,7 @@
+livefyre.admin_settings:
+  path: /admin/config/content/livefyre-enterprise
+  defaults:
+    _title: 'Livefyre enterprise'
+    _form: \Drupal\livefyre_enterprise\Form\AdminSettingsForm
+  requirements:
+    _permission: 'administer livefyre enterprise settings'
