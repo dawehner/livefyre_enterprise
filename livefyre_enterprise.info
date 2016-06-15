@@ -1,7 +1,0 @@
-name = Livefyre enterprise
-description = Implement Livefyre for enterprise users on your Drupal Site.
-core = 7.x
-
-configure = admin/config/content/livefyre-enterprise
-
-dependencies[] = entity

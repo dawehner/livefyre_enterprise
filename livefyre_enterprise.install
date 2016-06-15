@@ -5,22 +5,6 @@
  */
 
 /**
- * Implements hook_field_schema().
- */
-function livefyre_enterprise_field_schema($field) {
-  $columns = array(
-    'value' => array(
-      'type' => 'int',
-      'not null' => FALSE,
-      'size' => 'tiny',
-    ),
-  );
-  return array(
-    'columns' => $columns,
-  );
-}
-
-/**
  * Implements hook_schema().
  */
 function livefyre_enterprise_schema() {
@@ -132,23 +116,4 @@ function livefyre_enterprise_schema() {
   );
 
   return $schema;
-}
-
-/**
- * Implements hook_uninstall().
- *
- * Delete created variables.
- */
-function livefyre_enterprise_uninstall() {
-  variable_del('livefyre_enterprise_site_id');
-  variable_del('livefyre_enterprise_site_key');
-  variable_del('livefyre_enterprise_since_id');
-  variable_del('livefyre_enterprise_network');
-  variable_del('livefyre_enterprise_network_key');
-  variable_del('livefyre_enterprise_auth_delegate');
-  variable_del('livefyre_enterprise_conv_load_callback');
-  variable_del('livefyre_enterprise_custom_css');
-  variable_del('livefyre_enterprise_environment');
-  variable_del('livefyre_enterprise_jr_capture');
-  variable_del('livefyre_enterprise_sync_activity_number');
 }

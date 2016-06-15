@@ -1,0 +1,6 @@
+name: Livefyre enterprise
+description: Implement Livefyre for enterprise users on your Drupal Site.
+core: 8.x
+type: module
+
+configure: livefyre_enterprise.admin_settings
